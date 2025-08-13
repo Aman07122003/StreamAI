@@ -278,11 +278,26 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
   console.log("updating db...");
 
+  function formatDuration(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  function toMinutes(seconds) {
+    return Number((seconds / 60).toFixed(2)); // keep 2 decimal places
+  }
+  
+  
+  const durationInSeconds = toSeconds(videoFile.duration);
+
+  const formattedDuration = formatDuration(videoFile.duration);
+
   const video = await Video.create({
     videoFile: videoFile.hlsurl,
     title,
     description: description || "",
-    duration: videoFile.duration,
+    duration: durationInSeconds,
     thumbnail: thumbnailFile.url,
     owner: req.user?._id,
   });
