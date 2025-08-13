@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL:'https://streamai-1yrk.onrender.com',
+  baseURL: 'http://localhost:3000/api/v1',
   withCredentials: true,
 });
 

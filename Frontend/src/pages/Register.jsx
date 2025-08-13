@@ -11,13 +11,13 @@ const Register = () => {
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     username: '',
     email: '',
     password: '',
     confirmPassword: '',
     avatar: null,
-    coverImage: null
+    coverImage: null,
   });
   const [errors, setErrors] = useState({});
   const [preview, setPreview] = useState({
@@ -33,8 +33,8 @@ const Register = () => {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Name is required';
     }
     
     if (!formData.username.trim()) {
@@ -59,8 +59,8 @@ const Register = () => {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
-    if (!formData.profileImage) {
-      newErrors.profileImage = 'Profile image is required';
+    if (!formData.avatar) {
+      newErrors.avatar = 'Profile image is required';
     }
 
     if (!formData.coverImage) {
@@ -84,7 +84,7 @@ const Register = () => {
     }
   
     const payload = new FormData();
-    payload.append('fullName', formData.name);
+    payload.append('fullName', formData.fullName);
     payload.append('username', formData.username);
     payload.append('email', formData.email);
     payload.append('password', formData.password);
@@ -126,44 +126,39 @@ const Register = () => {
 
   const handleImageChange = (e, type) => {
     const file = e.target.files[0];
-    if (file) {
-      if (type === 'profile' && !file.type.startsWith('image/')) {
-        setErrors({
-          ...errors,
-          profileImage: 'Please upload an image file'
-        });
-        return;
-      }
-      if (type === 'cover' && !file.type.startsWith('image/')) {
-        setErrors({
-          ...errors,
-          coverImage: 'Please upload an image file'
-        });
-        return;
-      }
-
-      setFormData({
-        ...formData,
-        [type === 'profile' ? 'profileImage' : 'coverImage']: file
-      });
-
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview({
-          ...preview,
-          [type]: reader.result
-        });
-      };
-      reader.readAsDataURL(file);
-
-      // Clear error
+    if (!file) return;
+  
+    if (!file.type.startsWith('image/')) {
       setErrors({
         ...errors,
-        [type === 'profile' ? 'profileImage' : 'coverImage']: ''
+        [type === 'profile' ? 'avatar' : 'coverImage']: 'Please upload an image file'
       });
+      return;
     }
+  
+    if (type === 'profile') {
+      setAvatarFile(file);
+      setFormData({ ...formData, avatar: file });
+    } else {
+      setFormData({ ...formData, coverImage: file });
+    }
+  
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview({
+        ...preview,
+        [type]: reader.result
+      });
+    };
+    reader.readAsDataURL(file);
+  
+    setErrors({
+      ...errors,
+      [type === 'profile' ? 'avatar' : 'coverImage']: ''
+    });
   };
+  
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-white">

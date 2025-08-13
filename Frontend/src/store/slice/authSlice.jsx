@@ -3,8 +3,16 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import api from '../../services/api';
 
 // Define initial state
+
+let storedUser = localStorage.getItem('user');
+try {
+storedUser = storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null;
+} catch (err) {
+storedUser = null;
+}
 const initialState = {
-    user: JSON.parse(localStorage.getItem('user')) || null,
+    
+    user: storedUser,
     isAuthenticated: !!localStorage.getItem('accesstoken') || false,
     accessToken: localStorage.getItem('accesstoken') || null,
     refreshToken: localStorage.getItem('refreshtoken') || null,
@@ -13,14 +21,22 @@ const initialState = {
     status: false, 
     }                                                      
 
-    export const register = createAsyncThunk('/users/register', async (userData, { rejectWithValue }) => {
-        try {
-            const response = await api.post('/users/register', userData);
+    export const register = createAsyncThunk(
+        '/users/register',
+        async (formData, { rejectWithValue }) => {
+          try {
+            const response = await api.post('/users/register', formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data', // ✅ Let Axios send as multipart
+              },
+            });
             return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response.data);
+          } catch (error) {
+            return rejectWithValue(error.response?.data || { message: 'Unknown error' });
+          }
         }
-    });
+      );
+      
 
     export const login = createAsyncThunk('/users/login', async (userData, { rejectWithValue }) => {
         try {

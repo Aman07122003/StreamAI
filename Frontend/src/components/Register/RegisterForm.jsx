@@ -57,11 +57,11 @@ const RegisterForm = ({
         {/* Full Name Input */}
         <FormInput
           type="text"
-          name="name"
-          value={formData.name}
+          name="fullName"
+          value={formData.fullName}
           onChange={handleChange}
           placeholder="Enter your full name"
-          error={errors.name}
+          error={errors.fullName}
         />
 
         {/* Email Input */}

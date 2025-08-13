@@ -62,7 +62,7 @@ const Home = () => {
   const fetchVideos = async () => {
     try {
       setIsLoadingVideos(true);
-      const response = await axiosInstance.get('/videos/', {
+      const response = await axiosInstance.get('/videos', {
         params: {
           page: currentPage,
           limit: 12,

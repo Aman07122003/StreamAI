@@ -15,7 +15,7 @@ const FormInput = ({
   const getIcon = () => {
     switch (name) {
       case 'username':
-      case 'name':
+      case 'fullName':
         return <FiUser className="h-5 w-5 text-gray-400" />;
       case 'email':
         return <FiMail className="h-5 w-5 text-gray-400" />;
@@ -31,7 +31,7 @@ const FormInput = ({
     switch (name) {
       case 'username':
         return 'Username';
-      case 'name':
+      case 'fullName':
         return 'Full Name';
       case 'email':
         return 'Email';

@@ -10,7 +10,7 @@ const ImageUpload = ({
 }) => {
   const isProfile = type === 'profile';
   const previewUrl = isProfile ? preview.profile : preview.cover;
-  const errorMessage = isProfile ? error.profileImage : error.coverImage;
+  const errorMessage = isProfile ? error.avatar : error.coverImage;
 
   return (
     <div>

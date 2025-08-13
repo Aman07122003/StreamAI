@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000/api/v1';
+const BASE_URL = 'http://localhost:3000/api/v1';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -64,7 +64,7 @@ export const authAPI = {
     try {
       const formData = new FormData();
       Object.keys(userData).forEach(key => {
-        if (key === 'profileImage' || key === 'coverImage') {
+        if (key === 'avatar' || key === 'coverImage') {
           if (userData[key]) {
             formData.append(key, userData[key]);
           }
