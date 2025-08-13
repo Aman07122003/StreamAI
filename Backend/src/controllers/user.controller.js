@@ -596,11 +596,14 @@ const getWatchHistory = asyncHandler(async (req, res) => {
       },
     },
     {
+      $unwind: "$watchHistory", // break array into individual docs
+    },
+    {
       $lookup: {
         from: "videos",
-        localField: "watchHistory",
+        localField: "watchHistory.video", // match video field inside watchHistory object
         foreignField: "_id",
-        as: "watchHistory",
+        as: "watchHistory.video",
         pipeline: [
           {
             $lookup: {
@@ -621,33 +624,41 @@ const getWatchHistory = asyncHandler(async (req, res) => {
           },
           {
             $addFields: {
-              owner: {
-                $first: "$owner",
-              },
+              owner: { $first: "$owner" },
             },
           },
         ],
       },
     },
     {
+      $addFields: {
+        "watchHistory.video": { $first: "$watchHistory.video" },
+      },
+    },
+    {
+      $sort: { "watchHistory.createdAt": -1 },
+    },
+    {
+      $group: {
+        _id: null,
+        watchHistory: { $push: "$watchHistory" },
+      },
+    },
+    {
       $project: {
+        _id: 0,
         watchHistory: 1,
       },
     },
   ]);
 
-  let watchHistory = userWatchHistory[0].watchHistory;
+  const watchHistory = userWatchHistory[0]?.watchHistory || [];
 
   return res
     .status(200)
-    .json(
-      new APIResponse(
-        200,
-        watchHistory.reverse(),
-        "History Fetched Successfully"
-      )
-    );
+    .json(new APIResponse(200, watchHistory, "History Fetched Successfully"));
 });
+
 
 const clearWatchHistory = asyncHandler(async (req, res) => {
   const isCleared = await User.findByIdAndUpdate(

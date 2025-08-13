@@ -51,12 +51,8 @@ const userSchema = new Schema(
       required: true,
     },
     // watchHistory: [watchHistorySchema],
-    watchHistory: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Video",
-      },
-    ],
+    watchHistory: [watchHistorySchema],
+    
     avatar: {
       type: String,
       required: true,

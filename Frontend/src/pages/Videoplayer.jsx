@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import { toggleSubscription, getUserChannelSubscribers, getSubscribedChannels, getSubscriberCount } from "../api/subscription.api";
@@ -79,17 +79,21 @@ const Videoplayer = () => {
 
   const incrementView = async (videoId) => {
     try {
-      await axiosInstance.patch(`/videos/${videoId}/view`);
+      await axiosInstance.patch(`/videos/view/${videoId}`);
     } catch (err) {
       console.error('Error incrementing view:', err);
     }
   };
 
+  const hasIncrementedView = useRef(false);
+
   useEffect(() => {
-    if (videoId) {
+    if (videoId && !hasIncrementedView.current) {
       incrementView(videoId);
+      hasIncrementedView.current = true;
     }
   }, [videoId]);
+  
 
   // Fetch like/dislike stats and user state
   const fetchLikeStats = async () => {

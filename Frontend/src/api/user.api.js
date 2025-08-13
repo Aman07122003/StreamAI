@@ -40,3 +40,9 @@ export const getUserComments = async (username) => {
 export const getUserTweets = async (username) => {
     return axiosInstance.get(`${API_BASE}/${username}/tweets`);
 }
+
+export const userHistory = async (token) => {
+    return axiosInstance.get(`${API_BASE}/history`, 
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+}

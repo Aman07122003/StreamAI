@@ -9,6 +9,7 @@ import Videoplayer from './pages/Videoplayer';
 import Reels from './pages/Reels';
 import Channel from './pages/Channel';
 import Subscription from './pages/Subscription.jsx';
+import History from './pages/History.jsx';
 
 function App() {
   return (
@@ -43,6 +44,14 @@ function App() {
         }
         ></Route>
         <Route path="/watch" element={<Videoplayer />} />
+        <Route
+          path="/history"
+          element={
+            <ProtectedRoute>
+              <History />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

@@ -502,22 +502,6 @@ const getVideoById = asyncHandler(async (req, res) => {
     .json(new APIResponse(200, video[0], "Video sent successfully"));
 });
 
-// Increment view count for a video
-const incrementView = asyncHandler(async (req, res) => {
-  const { videoId } = req.params;
-  if (!isValidObjectId(videoId)) throw new APIError(400, "Invalid video id");
-
-  const video = await Video.findByIdAndUpdate(
-    videoId,
-    { $inc: { views: 1 } },
-    { new: true }
-  );
-
-  if (!video) throw new APIError(404, "Video not found");
-
-  return res.status(200).json(new APIResponse(200, { views: video.views }, "View incremented"));
-});
-
 const updateVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   const { title, description } = req.body;
@@ -624,40 +608,40 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
 const updateView = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  if (!isValidObjectId(videoId)) throw new APIError(400, "videoId required");
 
-  const video = await Video.findById(videoId);
-  if (!video) throw new APIError(400, "Video not found");
+  // 1. Increment video view count
+  await Video.findByIdAndUpdate(videoId, { $inc: { views: 1 } });
 
-  video.views += 1;
-  const updatedVideo = await video.save();
-  if (!updatedVideo) throw new APIError(400, "Error occurred on updating view");
-
-  let watchHistory;
+  // 2. If user is logged in → update watch history without duplicates
   if (req.user) {
-    watchHistory = await User.findByIdAndUpdate(
-      req.user?._id,
+    await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        // Remove existing entry for this video if it exists
+        $pull: {
+          watchHistory: { video: videoId }
+        }
+      }
+    );
+
+    // Push the new entry at the end
+    await User.findByIdAndUpdate(
+      req.user._id,
       {
         $push: {
-          watchHistory: new mongoose.Types.ObjectId(videoId),
-        },
-      },
-      {
-        new: true,
+          watchHistory: {
+            video: videoId,
+            createdAt: new Date()
+          }
+        }
       }
     );
   }
 
-  return res
-    .status(200)
-    .json(
-      new APIResponse(
-        200,
-        { isSuccess: true, views: updatedVideo.views, watchHistory },
-        "Video views updated successfully"
-      )
-    );
+  res.status(200).json({ message: "View incremented" });
 });
+
+
 
 export {
   getAllVideos,
@@ -667,5 +651,4 @@ export {
   deleteVideo,
   togglePublishStatus,
   updateView,
-  incrementView,
 };

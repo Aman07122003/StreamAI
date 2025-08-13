@@ -8,7 +8,6 @@ import {
   togglePublishStatus,
   updateView,
   getAllVideosByOption,
-  incrementView,
 } from "../controllers/video.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -48,7 +47,6 @@ router
 
 
 // Increment view count for a video
-router.route("/:videoId/view").patch(checkUser, incrementView);
 router.route("/toggle/publish/:videoId").patch(verifyJWT, togglePublishStatus);
 router.route("/view/:videoId").patch(checkUser, updateView);
 
