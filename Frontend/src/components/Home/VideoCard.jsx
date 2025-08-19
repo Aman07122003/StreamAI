@@ -32,7 +32,7 @@ const VideoCard = ({ video }) => {
           </div>
         </div>
         <div className="flex gap-3 p-4  flex-1 min-h-0 items-center">
-          <div className='flex items-center gap-3 w-full items-start'>
+          <div className='flex items-center gap-3 w-full'>
               <img
                 src={video.owner?.avatar || 'https://via.placeholder.com/40'}
                 alt={video.owner?.username}
