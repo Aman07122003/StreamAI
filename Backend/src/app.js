@@ -8,8 +8,13 @@ import dotenv from "dotenv";
 dotenv.config();
 const app = express();
 
+const allowedOrigins = [
+  "https://streamai-ui.onrender.com",
+  "http://localhost:5173",
+]
+
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: allowedOrigins,
   credentials: true
 }));
 

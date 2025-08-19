@@ -99,7 +99,7 @@ const Register = () => {
     try {
       setIsLoading(true);
       await dispatch(register(payload)).unwrap(); // ← This unwraps the result and throws if rejected
-      navigate('/home');
+      navigate('/');
     } catch (error) {
       console.error("Register error:", error);
       setError(error?.message || "Registration failed");
