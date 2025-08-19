@@ -14,7 +14,6 @@ const HomeHeader = ({
   isListening, 
   isProfileMenuOpen, 
   setIsProfileMenuOpen, 
-  handleLogout,
   profileMenuRef 
 }) => {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -65,7 +64,7 @@ const HomeHeader = ({
 
         {/* Profile Picture */}
         {isAuthenticated && user ? (
-          <div className='flex items-center gap-10'>
+          <div className='items-center gap-10 md:flex hidden'>
             <div className='flex items-center gap-2'>
               <Link
                 to={isAuthenticated ? "/upload" : "/login"}

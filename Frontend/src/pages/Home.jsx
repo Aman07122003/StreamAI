@@ -22,6 +22,7 @@ const Home = () => {
   const [sortOrder, setSortOrder] = useState(-1);
   const [isLoadingVideos, setIsLoadingVideos] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const profileMenuRef = useRef(null);
@@ -35,6 +36,12 @@ const Home = () => {
       fetchVideos();
     }
   }, [currentPage, sortBy, sortOrder, searchQuery, isAuthenticatedRedux]);
+
+  useEffect(() => {
+    const handleResize = () => setwindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticatedRedux && !isLoading) {
@@ -58,6 +65,15 @@ const Home = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isProfileMenuOpen]);
+
+  useEffect(() => {
+    if (windowWidth > 700) {
+      setIsSidebarOpen(true);   // open by default on desktop
+    } else {
+      setIsSidebarOpen(false);  // closed by default on mobile
+    }
+  }, [windowWidth]);
+  
 
   const fetchVideos = async () => {
     try {
@@ -150,25 +166,29 @@ const Home = () => {
         setIsProfileMenuOpen={setIsProfileMenuOpen}
         profileMenuRef={profileMenuRef}
       />
-
+  
+      {/* Sidebar */}
       <Sidebar isSidebarOpen={isSidebarOpen} />
-
+  
       {/* Main Content */}
-      <main className={`pt-16 ${isSidebarOpen ? 'ml-0 sm:ml-72' : 'ml-0'} transition-all duration-500`}>
+      <main
+        className={`pt-16 ${
+          isSidebarOpen ? "ml-0 sm:ml-72" : "ml-0"
+        } transition-all duration-500`}
+      >
         <div className="container mx-auto px-10 py-8">
           <SortOptions sortBy={sortBy} handleSort={handleSort} />
-          
           <VideoGrid videos={videos} isLoadingVideos={isLoadingVideos} />
-          
-          <Pagination 
-            currentPage={currentPage} 
-            totalPages={totalPages} 
-            setCurrentPage={setCurrentPage} 
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
           />
         </div>
       </main>
     </div>
   );
+  
 };
 
 export default Home; 
