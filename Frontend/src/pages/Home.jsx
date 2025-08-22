@@ -38,7 +38,7 @@ const Home = () => {
   }, [currentPage, sortBy, sortOrder, searchQuery, isAuthenticatedRedux]);
 
   useEffect(() => {
-    const handleResize = () => setwindowWidth(window.innerWidth);
+    const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -67,7 +67,7 @@ const Home = () => {
   }, [isProfileMenuOpen]);
 
   useEffect(() => {
-    if (windowWidth > 700) {
+    if (windowWidth > 600) {
       setIsSidebarOpen(true);   // open by default on desktop
     } else {
       setIsSidebarOpen(false);  // closed by default on mobile

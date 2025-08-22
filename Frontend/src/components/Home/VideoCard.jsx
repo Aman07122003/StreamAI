@@ -8,7 +8,7 @@ const THUMB_HEIGHT = '180px'; // Fixed thumbnail height
 const VideoCard = ({ video }) => {
   return (
     <Link
-        to={`/watch?v=${video._id}`}
+        to={`/video?v=${video._id}`}
         className="group"
         style={{ width: CARD_WIDTH, minWidth: CARD_WIDTH, maxWidth: CARD_WIDTH }}
       >
