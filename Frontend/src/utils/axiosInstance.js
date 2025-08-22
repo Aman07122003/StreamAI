@@ -1,7 +1,12 @@
-import axios from 'axios';
+import axios from "axios";
+
+const devURL = "http://localhost:3000/api/v1";
+const prodURL = "https://streamai-1yrk.onrender.com/api/v1";
+
+const URL = import.meta.env.MODE === "development" ? devURL : prodURL;
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3000/api/v1',
+  baseURL: URL,
   withCredentials: true,
 });
 
