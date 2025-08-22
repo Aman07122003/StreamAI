@@ -153,40 +153,24 @@ const registerUser = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user?._id,
-    {
-      $unset: {
-        refreshToken: 1,
-      },
-    },
-    {
-      new: true,
-    }
+    { $unset: { refreshToken: "" } },  // ✅ properly unset refreshToken
+    { new: true }
   );
 
-  const cookieOptions = {
+  res.clearCookie("accessToken", {
     httpOnly: true,
     secure: true,
     sameSite: "None",
-  };
+  });
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+  });
 
-  res.setHeader(
-    "Set-Cookie",
-    `accessToken=; Max-Age=-1; Path=/; HttpOnly; SameSite=None; Secure; Partitioned`
-  );
-
-  // .clearCookie("accessToken", {
-  //   ...cookieOptions,
-  //   maxAge: 1 * 24 * 60 * 60 * 1000,
-  // })
-  // .clearCookie("refreshToken", {
-  //   ...cookieOptions,
-  //   maxAge: 10 * 24 * 60 * 60 * 1000,
-  // })
-
-  return res
-    .status(200)
-    .json(new APIResponse(200, {}, "Logged out Successfully"));
+  return res.status(200).json(new APIResponse(200, {}, "Logged out Successfully"));
 });
+
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =

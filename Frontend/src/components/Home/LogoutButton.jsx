@@ -12,7 +12,6 @@ const LogoutButton = ({ onLogout, className = '' }) => {
   const handleLogout = async () => {
     try {
       await dispatch(logout()).unwrap(); // Use `.unwrap()` for better error handling
-      if (onLogout) onLogout();
       navigate('/');
     } catch (error) {
       console.error('Logout failed:', error);

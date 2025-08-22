@@ -1,6 +1,7 @@
 import React from 'react'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import api from '../../services/api';
+import axios from 'axios';
 
 // Load from localStorage safely
 let storedUser = localStorage.getItem('user');
@@ -47,15 +48,26 @@ export const login = createAsyncThunk('/users/login', async (userData, { rejectW
 });
 
 // Logout
-export const logout = createAsyncThunk('/users/logout', async (_, { rejectWithValue }) => {
-  try {
-    await api.post('/users/logout');
-    return true;
-  } catch (error) {
-    return rejectWithValue(error.response.data);
-  }
-});
-
+export const logout = createAsyncThunk(
+    '/users/logout',
+    async (_, { rejectWithValue }) => {
+      try {
+        await api.post('/users/logout');
+        return true;
+      } catch (error) {
+        // clear local session anyway
+        localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        
+        return rejectWithValue(
+          error.response?.data || { message: 'Logout failed on server, but local session cleared' }
+        );
+      }
+    }
+  );
+  
+  
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -130,8 +142,8 @@ const authSlice = createSlice({
       })
       .addCase(logout.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload.message || 'Logout failed';
-      });
+        state.error = action.payload?.message || 'Logout failed';
+      })      
   }
 }); 
 

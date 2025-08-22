@@ -1,10 +1,8 @@
 import axios from 'axios';
 
-const BASE_URL = [ 
-  'http://localhost:3000/api/v1',
-  'https://streamai-1yrk.onrender.com',
+const BASE_URL = 
+  'https://streamai-1yrk.onrender.com';
 
-]
 
 const api = axios.create({
   baseURL: BASE_URL,
