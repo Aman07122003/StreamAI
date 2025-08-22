@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api/v1';
+const API_URL = [
+  'http://localhost:8000/api/v1', 
+  'https://streamai-1yrk.onrender.com',
+]
 
 const videoService = {
   getAllVideos: async (params = {}) => {

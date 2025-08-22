@@ -44,7 +44,7 @@ const Videoplayer = () => {
   const fetchVideoData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/videos/${videoId}`);
+      const response = await axiosInstance.get(`/videos/${videoId}`);
       console.log(response.data.data);
       setVideo(response.data.data);
       setLikeCount(response.data.data.likes || 0);
@@ -71,7 +71,7 @@ const Videoplayer = () => {
 
   const fetchRelatedVideos = async () => {
     try {
-      const response = await axios.get('/videos?limit=10');
+      const response = await axiosInstance.get('/videos?limit=10');
       setRelatedVideos(response.data.data || []);
     } catch (err) {
       console.error('Error fetching related videos:', err);

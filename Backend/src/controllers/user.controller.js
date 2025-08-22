@@ -11,24 +11,55 @@ import mongoose from "mongoose";
 
 // TODO: Review and Enhance all controllers
 
+const loginUser = asyncHandler(async (req, res) => {
+  let { email, password, username } = req.body;
+
+  if ((!email && !username) || !password) {
+    throw new APIError(400, "Username or Email is required");
+  }
+
+  const user = await User.findOne({ $or: [{ email }, { username }] });
+  if (!user) {
+    return res.status(404).json(new APIResponse(404, [], "User not Found"));
+  }
+
+  const isCredentialValid = await user.isPasswordCorrect(password);
+  if (!isCredentialValid) {
+    return res.status(401).json(new APIResponse(401, [], "Invalid Credentials"));
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
+
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken -watchHistory"
+  );
+
+  // Cookies (Max-Age in seconds)
+  res.setHeader("Set-Cookie", [
+    `accessToken=${accessToken}; Max-Age=${24 * 60 * 60}; Path=/; HttpOnly; SameSite=None; Secure`,
+    `refreshToken=${refreshToken}; Max-Age=${10 * 24 * 60 * 60}; Path=/; HttpOnly; SameSite=None; Secure`
+  ]);
+
+  return res.status(200).json(
+    new APIResponse(200, { user: loggedInUser, accessToken, refreshToken }, "Logged In Successfully")
+  );
+});
+
 const generateAccessAndRefreshToken = async (_id) => {
   try {
     const user = await User.findById(_id);
-
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
-    return { refreshToken, accessToken };
+    return { accessToken, refreshToken }; // ✅ consistent naming
   } catch (error) {
-    throw new APIError(
-      500,
-      "Something went wrong while generating refresh and access token"
-    );
+    throw new APIError(500, "Something went wrong while generating tokens");
   }
 };
+
 
 const registerUser = asyncHandler(async (req, res) => {
   // Log incoming registration data for debugging
@@ -118,80 +149,6 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new APIResponse(200, userData, "Account Created Successfully"));
 });
 
-const loginUser = asyncHandler(async (req, res) => {
-  // data <- req.body
-  // validate data
-  // find User
-  // generate tokens
-  // store tokens in database
-  // set tokens in cookie
-  // send response
-
-  // data <- req.body
-
-  let { email, password, username } = req.body;
-  console.log(email, password, username)
-
-  // validate
-  if ((!email && !username) || !password) {
-    throw new APIError(400, "Username or Email is required");
-  }
-
-  // find User
-  const user = await User.findOne({
-    $or: [{ email }, { username }],
-  });
-
-  if (!user) {
-    // throw new APIError(404, "User not Found");
-    return res.status(404).json(new APIResponse(404, [], "User not Found"));
-  }
-
-  const isCredentialValid = await user.isPasswordCorrect(password);
-  if (!isCredentialValid) {
-    // throw new APIError(401, "Credential Invalid");
-    return res
-      .status(401)
-      .json(new APIResponse(401, [], "Invalid Credentials"));
-  }
-
-  // generate and store tokens
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    user._id
-  );
-
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken -watchHistory"
-  );
-
-  // set tokens in cookie and send response
-  // const cookieOptions = {
-  //   httpOnly: true,
-  //   secure: true,
-  //   sameSite: "None",
-  //   Partitioned: true,
-  // };
-
-  res.setHeader(
-    "Set-Cookie",
-    `accessToken=${accessToken}; Max-Age=${1 * 24 * 60 * 60 * 1000}; Path=/; HttpOnly; SameSite=None; Secure; Partitioned`
-  );
-
-  // res.setHeader(
-  //   "Set-Cookie",
-  //   `__Host-refreshToken=${refreshToken}; Max-Age=${10 * 24 * 60 * 60 * 1000}; Path=/; HttpOnly; SameSite=None; Secure; Partitioned`
-  // );
-
-  return res
-    .status(200)
-    .json(
-      new APIResponse(
-        200,
-        { user: loggedInUser, accessToken, refreshToken },
-        "Logged In Successfully"
-      )
-    );
-});
 
 const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(

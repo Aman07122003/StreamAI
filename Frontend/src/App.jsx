@@ -43,7 +43,7 @@ function App() {
           </ProtectedRoute>
         }
         ></Route>
-        <Route path="/video" element={<Videoplayer />} />
+        <Route path="/watch" element={<Videoplayer />} />
         <Route
           path="/history"
           element={

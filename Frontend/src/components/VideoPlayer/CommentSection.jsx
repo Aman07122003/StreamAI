@@ -78,7 +78,7 @@ const CommentSection = ({ videoId }) => {
   }, [content]);
 
   return (
-    <div className="max-w-full mx-auto p-4 bg-gray-800 rounded-lg shadow-sm">
+    <div className="w-full md:max-w-full mx-auto p-4 bg-gray-800 rounded-lg shadow-sm">
       <h3 className="text-xl font-bold mb-4 pb-2 text-bg-gray-700 border-b">Comments ({comments.length})</h3>
 
       {/* Add Comment */}
@@ -95,7 +95,7 @@ const CommentSection = ({ videoId }) => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full p-3 bg-gray-700 border border-bg-gray-700 rounded-lg resize-none"
+            className="w-full md:h-auto h-24 p-3 bg-gray-700 border border-bg-gray-700 rounded-lg resize-none"
           />
           <div className="flex justify-end mt-2">
             <button 

@@ -8,7 +8,7 @@ const VideoPlayer = ({ video }) => {
         src={video.videoFile}
         poster={video.thumbnail}
         controls
-        className="w-full h-full"
+        className="w-full h-full mt-10"
       >
         Your browser does not support the video tag.
       </video>

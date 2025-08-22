@@ -1,56 +1,62 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3000/api/v1';
+const BASE_URL = [ 
+  'http://localhost:3000/api/v1',
+  'https://streamai-1yrk.onrender.com',
 
-// Create axios instance with default config
+]
+
 const api = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true // Enable sending cookies
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
 });
 
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accesstoken');
+    const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    console.error('Request interceptor error:', error);
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Response interceptor
 api.interceptors.response.use(
-  (response) => {
-    console.log('API Response:', response);
-    return response;
-  },
+  (response) => response,
   async (error) => {
-    console.error('API Error:', error.response || error);
-    
-    // Handle 401 Unauthorized errors
-    if (error.response?.status === 401) {
-      const refreshtoken = localStorage.getItem('refreshtoken');
-      if (refreshtoken) {
+    if (error.response?.status === 401 && !error.config._retry) {
+      error.config._retry = true;
+
+      const oldAccessToken = localStorage.getItem('accessToken');
+      const oldRefreshToken = localStorage.getItem('refreshToken');
+      console.log("🔴 Old Access Token:", oldAccessToken);
+      console.log("🔴 Old Refresh Token:", oldRefreshToken);
+
+      if (oldRefreshToken) {
         try {
-          const response = await api.post('/auth/refresh-token', { refreshtoken });
-          const { accesstoken } = response.data;
-          localStorage.setItem('accesstoken', accesstoken);
-          
-          // Retry the original request
-          error.config.headers.Authorization = `Bearer ${accesstoken}`;
+          const res = await axios.post(`${BASE_URL}/auth/refresh-token`, { refreshToken: oldRefreshToken });
+          const { accessToken: newAccessToken, refreshToken: newRefreshToken } = res.data.data;
+
+          console.log("🟢 New Access Token:", newAccessToken);
+          console.log("🟢 New Refresh Token:", newRefreshToken);
+
+          // update localStorage
+          localStorage.setItem('accessToken', newAccessToken);
+          if (newRefreshToken) {
+            localStorage.setItem('refreshToken', newRefreshToken);
+          }
+
+          // retry the original request with new token
+          error.config.headers.Authorization = `Bearer ${newAccessToken}`;
           return api(error.config);
         } catch (refreshError) {
-          console.error('Token refresh failed:', refreshError);
-          localStorage.removeItem('accesstoken');
-          localStorage.removeItem('refreshtoken');
+          console.error('❌ Token refresh failed:', refreshError);
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
           window.location.href = '/login';
         }
       }
@@ -59,130 +65,60 @@ api.interceptors.response.use(
   }
 );
 
+// API calls
 export const authAPI = {
   register: async (userData) => {
-    try {
-      const formData = new FormData();
-      Object.keys(userData).forEach(key => {
-        if (key === 'avatar' || key === 'coverImage') {
-          if (userData[key]) {
-            formData.append(key, userData[key]);
-          }
-        } else {
-          formData.append(key, userData[key]);
-        }
-      });
-      
-      const response = await api.post('/users/register', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response;
-    } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
-    }
+    const formData = new FormData();
+    Object.keys(userData).forEach((key) => {
+      formData.append(key, userData[key]);
+    });
+
+    return api.post('/users/register', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
   },
 
   login: async (credentials) => {
-    try {
-      console.log('Sending login request with:', credentials);
-      const response = await api.post('/users/login', credentials);
-      console.log('Login response received:', response);
-      
-      // Check if response has the expected structure
-      if (!response?.data?.data?.accessToken) {
-        throw new Error('Invalid response structure from server');
-      }
-      
-      return response;
-    } catch (error) {
-      console.error('Login error:', error);
-      // If the error is from the server, pass it through
-      if (error.response?.data) {
-        throw error;
-      }
-      // Otherwise, wrap it in a more descriptive error
-      throw new Error(error.message || 'Failed to login');
-    }
+    const response = await api.post('/users/login', credentials);
+    const { user, accessToken, refreshToken } = response.data.data;
+
+    // persist tokens + user
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('user', JSON.stringify(user));
+
+    return response;
   },
 
   logout: async () => {
-    try {
-      const response = await api.post('/users/logout');
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      return response;
-    } catch (error) {
-      console.error('Logout error:', error);
-      throw error;
-    }
+    await api.post('/users/logout');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
   },
 
   refreshToken: async (refreshToken) => {
-    try {
-      const response = await api.post('/auth/refresh-token', { refreshToken });
-      return response;
-    } catch (error) {
-      console.error('Token refresh error:', error);
-      throw error;
-    }
-  }
+    return api.post('/auth/refresh-token', { refreshToken });
+  },
 };
 
 export const userAPI = {
-  getCurrentUser: async () => {
-    try {
-      const response = await api.get('/users/me');
-      return response;
-    } catch (error) {
-      console.error('Get current user error:', error);
-      throw error;
-    }
+  getCurrentUser: () => api.get('/users/me'),
+  updateProfile: (userData) => api.patch('/users/me', userData),
+  updateAvatar: (file) => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    return api.patch('/users/me/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
   },
-
-  updateProfile: async (userData) => {
-    try {
-      const response = await api.patch('/users/me', userData);
-      return response;
-    } catch (error) {
-      console.error('Update profile error:', error);
-      throw error;
-    }
+  updateCoverImage: (file) => {
+    const formData = new FormData();
+    formData.append('coverImage', file);
+    return api.patch('/users/me/cover', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
   },
-
-  updateAvatar: async (avatarFile) => {
-    try {
-      const formData = new FormData();
-      formData.append('avatar', avatarFile);
-      const response = await api.patch('/users/me/avatar', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response;
-    } catch (error) {
-      console.error('Update avatar error:', error);
-      throw error;
-    }
-  },
-
-  updateCoverImage: async (coverFile) => {
-    try {
-      const formData = new FormData();
-      formData.append('coverImage', coverFile);
-      const response = await api.patch('/users/me/cover', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response;
-    } catch (error) {
-      console.error('Update cover image error:', error);
-      throw error;
-    }
-  }
 };
 
-export default api; 
+export default api;

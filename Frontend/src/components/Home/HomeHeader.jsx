@@ -64,11 +64,11 @@ const HomeHeader = ({
 
         {/* Profile Picture */}
         {isAuthenticated && user ? (
-          <div className='items-center gap-10 md:flex hidden'>
+          <div className='items-center gap-10 md:flex'>
             <div className='flex items-center gap-2'>
               <Link
                 to={isAuthenticated ? "/upload" : "/login"}
-                className="flex items-center gap-2 text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-4 py-2 transition"
+                className="md:flex hidden items-center gap-2  text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-4 py-2 transition"
               >
                 <FiUpload />
                 Upload Video
@@ -84,7 +84,7 @@ const HomeHeader = ({
                 alt={user.username}
                 className="w-10 h-10 rounded-full object-cover border-2 border-purple-500/50 hover:border-purple-500 transition-colors"
               />
-              <p>{user.username}</p>
+              <p className='text-white'>{user.username}</p>
             </button>
             {isProfileMenuOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-xl shadow-lg z-50 py-2 border border-gray-700">

@@ -5,7 +5,7 @@ import { getChannelStats, getChannelVideos } from '../api/dashboard.api.js';
 import { useSelector } from 'react-redux';
 
 const Channel = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);

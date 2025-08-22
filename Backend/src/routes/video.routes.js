@@ -46,7 +46,7 @@ router
 
 
 // Increment view count for a video
-router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
+router.route("/toggle/publish/:videoId").patch(verifyJWT ,togglePublishStatus);
 router.route("/view/:videoId").patch(checkUser, updateView);
 
 export default router;
