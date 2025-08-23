@@ -34,7 +34,7 @@ axiosInstance.interceptors.response.use(
       try {
         const response = await axios.post(
           `${URL}/users/refresh-token`, // ✅ use same base URL
-          {},
+          { refreshToken },
           { withCredentials: true }
         );
 
