@@ -176,7 +176,7 @@ const Home = () => {
           isSidebarOpen ? "ml-0 sm:ml-72" : "ml-0"
         } transition-all duration-500`}
       >
-        <div className="container mx-auto px-10 py-8">
+        <div className="container mx-auto md:px-10 px-3 py-8">
           <SortOptions sortBy={sortBy} handleSort={handleSort} />
           <VideoGrid videos={videos} isLoadingVideos={isLoadingVideos} />
           <Pagination

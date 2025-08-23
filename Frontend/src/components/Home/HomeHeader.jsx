@@ -104,13 +104,13 @@ const HomeHeader = ({
           <div className='flex items-center gap-2'>
             <Link
               to="/register"
-              className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all transform hover:scale-[1.02]"
+              className="md:px-4 md:py-2 px-3 py-2 text-[12px] md:text  bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all transform hover:scale-[1.02]"
             >
               Register
             </Link>
             <Link
               to="/login"
-              className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all transform hover:scale-[1.02]"
+              className="md:px-4 md:py-2 px-3 py-2 text-[12px] md:text bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl hover:from-purple-600 hover:to-indigo-600 transition-all transform hover:scale-[1.02]"
             >
               Sign In
             </Link>
