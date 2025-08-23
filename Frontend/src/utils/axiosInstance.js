@@ -1,4 +1,6 @@
 import axios from "axios";
+import store from '../store/store.js';
+import { logout, refreshToken } from "../store/slice/authSlice";
 
 const devURL = "http://localhost:3000/api/v1";
 const prodURL = "https://streamai-1yrk.onrender.com/api/v1";
@@ -13,7 +15,7 @@ const axiosInstance = axios.create({
 // Request Interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem("accesstoken"); // ✅ match Redux slice key
+    const accessToken = store.getState().auth.accessToken; // ✅ match Redux slice key
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
@@ -32,27 +34,14 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const response = await axios.post(
-          `${URL}/users/refresh-token`, // ✅ use same base URL
-          { refreshToken },
-          { withCredentials: true }
-        );
+        await store.dispatch(refreshToken()).unwrap();
 
-        const newAccessToken = response.data.accessToken;
+        const newAccessToken = store.getState().auth.accessToken;
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-        // ✅ update storage + headers
-        localStorage.setItem("accesstoken", newAccessToken);
-        axiosInstance.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${newAccessToken}`;
-        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-
-        return axiosInstance(originalRequest); // retry
+        return axiosInstance(originalRequest);
       } catch (refreshError) {
-        localStorage.removeItem("accesstoken");
-        localStorage.removeItem("refreshtoken");
-        localStorage.removeItem("user");
-        window.location.href = "/login";
+        store.dispatch(logout());
         return Promise.reject(refreshError);
       }
     }

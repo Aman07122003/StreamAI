@@ -35,10 +35,9 @@ const loginUser = asyncHandler(async (req, res) => {
   );
 
   // Cookies (Max-Age in seconds)
-  res.setHeader("Set-Cookie", [
-    `accessToken=${accessToken}; Max-Age=${24 * 60 * 60}; Path=/; HttpOnly; SameSite=None; Secure`,
-    `refreshToken=${refreshToken}; Max-Age=${10 * 24 * 60 * 60}; Path=/; HttpOnly; SameSite=None; Secure`
-  ]);
+  res.setHeader("Set-Cookie",
+    `accessToken=${accessToken}; Max-Age=${1 * 24 * 60 * 60}; Path=/; HttpOnly; SameSite=None; Secure`,
+    );
 
   return res.status(200).json(
     new APIResponse(200, { user: loggedInUser, accessToken, refreshToken }, "Logged In Successfully")
@@ -153,22 +152,39 @@ const registerUser = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user?._id,
-    { $unset: { refreshToken: "" } },  // ✅ properly unset refreshToken
-    { new: true }
+    {
+      $unset: {
+        refreshToken: 1,
+      },
+    },
+    {
+      new: true,
+    }
   );
 
-  res.clearCookie("accessToken", {
+  const cookieOptions = {
     httpOnly: true,
     secure: true,
     sameSite: "None",
-  });
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-  });
+  };
 
-  return res.status(200).json(new APIResponse(200, {}, "Logged out Successfully"));
+  res.setHeader(
+    "Set-Cookie",
+    `accessToken=; Max-Age=-1; Path=/; HttpOnly; SameSite=None; Secure; Partitioned`
+  );
+
+  // .clearCookie("accessToken", {
+  //   ...cookieOptions,
+  //   maxAge: 1 * 24 * 60 * 60 * 1000,
+  // })
+  // .clearCookie("refreshToken", {
+  //   ...cookieOptions,
+  //   maxAge: 10 * 24 * 60 * 60 * 1000,
+  // })
+
+  return res
+    .status(200)
+    .json(new APIResponse(200, {}, "Logged out Successfully"));
 });
 
 

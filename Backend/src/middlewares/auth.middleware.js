@@ -5,34 +5,40 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const verifyJWT = asyncHandler(async (req, _, next) => {
   try {
-    const accessToken = req.header("Authorization")?.replace("Bearer ", "");
+    const authHeader = req.headers.authorization;
 
-    if (!accessToken) {
-      throw new APIError(401, "Unauthorized request");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new APIError(401, "Access token required");
     }
 
-    const decodedToken = jwt.verify(
-      accessToken,
-      process.env.ACCESS_TOKEN_SECRET
-    );
+    const token = authHeader.split(" ")[1];
 
-    if (!decodedToken) {
-      throw new APIError(401, "Invalid Access Token");
-    }
+    if (!token) {
+      throw new APIError(401, "Access token required");
+    } 
+    
+        // Verify token
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-    const user = await User.findById(decodedToken._id).select(
-      "-password -refreshToken -watchHistory"
-    );
+        // Get user from database
+        const user = await User.findById(decoded._id).select("-password -refreshToken");
+        
+        if (!user) {
+          throw new APIError(401, "User not found");
+        }
+    
+        // Attach user to request
+        req.user = user;
+        next();
+    
+      } catch (error) {
+        if (error.name === "JsonWebTokenError") {
+          throw new APIError(401, "Invalid access token");
+        } else if (error.name === "TokenExpiredError") {
+          throw new APIError(401, "Access token expired");
+        }
+        throw error;
+      }
+    });
 
-    if (!user) {
-      throw new APIError(401, "Invalid Access Token");
-    }
-
-    req.user = user;
-    next();
-  } catch (error) {
-    throw new APIError(401, error?.message || "Invalid access token");
-  }
-});
-
-export { verifyJWT };
+    export { verifyJWT };

@@ -106,7 +106,6 @@ const Videoplayer = () => {
       setIsLiked(!!stats.isLiked);
       setIsDisliked(!!stats.isDisliked);
     } catch (err) {
-      console.error('Error fetching like stats:', err);
     }
   };
 

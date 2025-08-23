@@ -52,17 +52,26 @@ export const logout = createAsyncThunk(
     '/users/logout',
     async (_, { rejectWithValue }) => {
       try {
-        await api.post('/users/logout');
+        const response = await api.post('/users/logout');
         return true;
       } catch (error) {
-        // clear local session anyway
-        localStorage.removeItem('user');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        
         return rejectWithValue(
           error.response?.data || { message: 'Logout failed on server, but local session cleared' }
         );
+      }
+    }
+  );
+
+  export const refreshToken = createAsyncThunk(
+    'users/refreshToken',
+    async (_, { getState, rejectWithValue }) => {
+      try {
+        const refreshToken = getState().auth.refreshToken;
+  
+        const response = await api.post('/users/refresh-token', { refreshToken }); // ✅ send token
+        return response.data; // should contain new accessToken + maybe refreshToken
+      } catch (error) {
+        return rejectWithValue(error.response?.data || error.message);
       }
     }
   );
