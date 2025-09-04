@@ -232,6 +232,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
   if (!videoFileLocalFilePath)
     throw new APIError(400, "Video File Must be Required");
 
+  
   // fetch local thumbnail file path
   let thumbnailLocalFilePath = null;
   if (req.files && req.files.thumbnail && req.files.thumbnail.length > 0) {
@@ -288,8 +289,8 @@ const publishAVideo = asyncHandler(async (req, res) => {
     return Number((seconds / 60).toFixed(2)); // keep 2 decimal places
   }
   
-  
-  const durationInSeconds = toSeconds(videoFile.duration);
+  const durationInSeconds = Math.floor(videoFile.duration); 
+
 
   const formattedDuration = formatDuration(videoFile.duration);
 
