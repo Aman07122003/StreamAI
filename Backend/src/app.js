@@ -4,17 +4,16 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import dotenv from "dotenv";
 
-
 dotenv.config();
 const app = express();
 
+// Fixed CORS configuration
 app.use(cors({
-  origin: "*",
-  credentials: false,
+  origin: process.env.NODE_ENV === "production" 
+    ? "https://streamai-ui.onrender.com" 
+    : "http://localhost:3000",
+  credentials: true
 }));
-
-
-// origin: process.env.CORS_ORIGIN,
 
 app.use(express.json({ limit: "99mb" }));
 app.use(express.urlencoded({ extended: true, limit: "99mb" }));
@@ -22,7 +21,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-//import Routes
+// Import Routes
 import userRouter from "./routes/user.routes.js";
 import videoRouter from "./routes/video.routes.js";
 import tweetRouter from "./routes/tweet.routes.js";
@@ -36,34 +35,16 @@ import aboutRouter from "./routes/about.routes.js";
 
 app.get("/", (req, res) => res.send("Backend of YouTube bt Aman Pratap Singh"));
 
-// http://localhost:3000/api/v1/healthcheck/routes
+// Routes declarations
 app.use("/api/v1/healthcheck", healthcheckRouter);
-
-// http://localhost:3000/api/v1/users/routes
 app.use("/api/v1/users", userRouter);
-
-// http://localhost:3000/api/v1/videos/routes
 app.use("/api/v1/videos", videoRouter);
-
-// http://localhost:3000/api/v1/tweets/routes
 app.use("/api/v1/tweets", tweetRouter);
-
-// http://localhost:3000/api/v1/subscription/routes
 app.use("/api/v1/subscription", subscriptionRouter);
-
-// http://localhost:3000/api/v1/playlist/routes
 app.use("/api/v1/playlist", playlistRouter);
-
-// http://localhost:3000/api/v1/comment/routes
 app.use("/api/v1/comment", commentRouter);
-
-// http://localhost:3000/api/v1/like/routes
 app.use("/api/v1/like", likeRouter);
-
-// http://localhost:3000/api/v1/dashboard/routes
 app.use("/api/v1/dashboard", dashboardRouter);
-
-// http://localhost:3000/api/v1/about/user
 app.use("/api/v1/about/user/", aboutRouter);
 
 export { app };
