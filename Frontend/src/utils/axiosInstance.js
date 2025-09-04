@@ -2,13 +2,8 @@ import axios from "axios";
 import store from '../store/store.js';
 import { logout, refreshToken } from "../store/slice/authSlice";
 
-const devURL = "http://localhost:3000/api/v1";
-const prodURL = "https://streamai-1yrk.onrender.com/api/v1";
-
-const URL = import.meta.env.MODE === "development" ? devURL : prodURL;
-
 const axiosInstance = axios.create({
-  baseURL: URL,
+  baseURL: "https://streamai-1yrk.onrender.com/api/v1",
   withCredentials: true,
 });
 
