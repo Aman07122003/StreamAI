@@ -14,7 +14,6 @@ import { stopWords } from "../utils/helperData.js";
 import { Comment } from "../models/comment.model.js";
 import { Like } from "../models/like.model.js";
 import { Playlist } from "../models/playlist.model.js";
-import { Subscription } from "../models/subscription.model.js";
 import fs from "fs";
 
 // TODO: write logic of title and description competition
@@ -232,7 +231,6 @@ const publishAVideo = asyncHandler(async (req, res) => {
   if (!videoFileLocalFilePath)
     throw new APIError(400, "Video File Must be Required");
 
-  
   // fetch local thumbnail file path
   let thumbnailLocalFilePath = null;
   if (req.files && req.files.thumbnail && req.files.thumbnail.length > 0) {
@@ -279,26 +277,11 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
   console.log("updating db...");
 
-  function formatDuration(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
-  }
-
-  function toMinutes(seconds) {
-    return Number((seconds / 60).toFixed(2)); // keep 2 decimal places
-  }
-  
-  const durationInSeconds = Math.floor(videoFile.duration); 
-
-
-  const formattedDuration = formatDuration(videoFile.duration);
-
   const video = await Video.create({
     videoFile: videoFile.hlsurl,
     title,
     description: description || "",
-    duration: durationInSeconds,
+    duration: videoFile.duration,
     thumbnail: thumbnailFile.url,
     owner: req.user?._id,
   });
@@ -427,26 +410,6 @@ const getVideoById = asyncHandler(async (req, res) => {
     {
       $unwind: "$owner",
     },
-    // check if current user is subscribed to the owner
-    {
-      $lookup: {
-        from: "subscriptions",
-        let: { ownerId: "$owner._id", userId: req.user?._id },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ["$channel", "$$ownerId"] },
-                  { $eq: ["$subscriber", "$$userId"] }
-                ]
-              }
-            }
-          }
-        ],
-        as: "subscription"
-      }
-    },
     // added like fields
     {
       $project: {
@@ -478,15 +441,6 @@ const getVideoById = asyncHandler(async (req, res) => {
           $cond: {
             if: {
               $in: [req.user?._id, "$dislikes"],
-            },
-            then: true,
-            else: false,
-          },
-        },
-        isSubscribed: {
-          $cond: {
-            if: {
-              $gt: [{ $size: "$subscription" }, 0],
             },
             then: true,
             else: false,
@@ -609,40 +563,40 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
 const updateView = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
+  if (!isValidObjectId(videoId)) throw new APIError(400, "videoId required");
 
-  // 1. Increment video view count
-  await Video.findByIdAndUpdate(videoId, { $inc: { views: 1 } });
+  const video = await Video.findById(videoId);
+  if (!video) throw new APIError(400, "Video not found");
 
-  // 2. If user is logged in → update watch history without duplicates
+  video.views += 1;
+  const updatedVideo = await video.save();
+  if (!updatedVideo) throw new APIError(400, "Error occurred on updating view");
+
+  let watchHistory;
   if (req.user) {
-    await User.findByIdAndUpdate(
-      req.user._id,
-      {
-        // Remove existing entry for this video if it exists
-        $pull: {
-          watchHistory: { video: videoId }
-        }
-      }
-    );
-
-    // Push the new entry at the end
-    await User.findByIdAndUpdate(
-      req.user._id,
+    watchHistory = await User.findByIdAndUpdate(
+      req.user?._id,
       {
         $push: {
-          watchHistory: {
-            video: videoId,
-            createdAt: new Date()
-          }
-        }
+          watchHistory: new mongoose.Types.ObjectId(videoId),
+        },
+      },
+      {
+        new: true,
       }
     );
   }
 
-  res.status(200).json({ message: "View incremented" });
+  return res
+    .status(200)
+    .json(
+      new APIResponse(
+        200,
+        { isSuccess: true, views: updatedVideo.views, watchHistory },
+        "Video views updated successfully"
+      )
+    );
 });
-
-
 
 export {
   getAllVideos,

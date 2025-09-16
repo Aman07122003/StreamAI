@@ -455,7 +455,6 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     .json(new APIResponse(200, channelUser[0], "Channel Fetched Successfully"));
 });
 
-// TODO Get Proper WatchHistory
 const getNewWatchHistory = asyncHandler(async (req, res) => {
   const userWatchHistory = await User.aggregate([
     {
