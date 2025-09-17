@@ -1,53 +1,55 @@
-import React, { useState, useEffect } from 'react'
-import axiosInstance from '../utils/axiosInstance'
-import { HomeHeader } from '../components/Home'
-import { Sidebar } from '../components/Home'
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { clearWatchHistory, watchHistory } from "../app/Slices/authSlice";
+import { GuestComponent, VideoList } from "../components";
+import { icons } from "../assets/icons";
 
-const History = () => {
-  const [history, setHistory] = useState([])
-  const [loading, setLoading] = useState(true)
+function History() {
+  const dispatch = useDispatch();
+
+  const { userData, loading } = useSelector(({ auth }) => auth);
 
   useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const response = await axiosInstance.get('/users/history')
-        console.log("Fetching user history...", response.data.data)
-        setHistory(response.data.data)
-      } catch (error) {
-        console.error("Error fetching history:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
+    dispatch(watchHistory());
+  }, []);
 
-    fetchHistory()
-  }, [])
+  const deleteWatchHistory = () => {
+    dispatch(clearWatchHistory());
+  };
+
+  const videos = useSelector(({ auth }) => auth.userData.watchHistory);
+
+  const isHistoryEmpty = !loading && videos?.length < 1;
 
   return (
     <>
-        <HomeHeader />
-        <Sidebar />
-        <div className='mx-auto p-4 bg-gray-900 pt-16'>
-            <h1 className='text-2xl font-bold text-white'>User History</h1>
-            {loading ? (
-            <p className='text-white'>Loading...</p>
-            ) : history.length > 0 ? (
-            <ul className='list-disc pl-5 text-white'>
-                {history.map((item, index) => (
-                <li key={item._id || index} className='mb-2'>
-                    {item.video?.title || 'Untitled Video'} —{' '}
-                    {new Date(item.createdAt).toLocaleString()}
-                </li>
-                ))}
-            </ul>
-            ) : (
-            <p className='text-white'>No history available.</p>
-            )}
-        </div>
+      <section className="w-full">
+        {!isHistoryEmpty && !loading && (
+          <div className="flex items-center justify-center py-2">
+            <button
+              onClick={deleteWatchHistory}
+              className="mt-4 rounded inline-flex items-center gap-x-2  text-white  dark:bg-[#ae7aff] bg-red-500 dark:hover:bg-[#ae7aff]/95 hover:bg-red-300 border border-transparent hover:border-dotted hover:border-white px-3 py-2 font-semibold dark:text-black"
+            >
+              <span className="h-5">{icons.delete}</span>
+              Clear History
+            </button>
+          </div>
+        )}
+        <ul className="w-full flex flex-col gap-4">
+          {!isHistoryEmpty && <VideoList videos={videos} loading={loading} />}
+          {isHistoryEmpty && (
+            <GuestComponent
+              title="Empty Video History"
+              subtitle="You have no previously saved history."
+              icon={icons.history}
+              guest={false}
+            />
+          )}
+        </ul>
+      </section>
     </>
-
-    
-  )
+  );
 }
 
-export default History
+export default History;

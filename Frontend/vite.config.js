@@ -1,16 +1,14 @@
-import { defineConfig } from 'vite'
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
+// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    tailwindcss(),
-  ],
-  build: {
-    target: "es2015", 
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      target: "es2015",
+  plugins: [react()],
+  server: {
+    proxy: {
+      // "/api": "https://playtubebyyashpz.onrender.com/api/v1",
+      "/api": "http://localhost:9000/api/v1",
     },
   },
-})
+});
+

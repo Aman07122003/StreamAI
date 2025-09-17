@@ -1,173 +1,117 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Sidebar from '../components/Home/Sidebar.jsx';
-import HomeHeader from '../components/Home/HomeHeader.jsx';
-import { getChannelStats, getChannelVideos } from '../api/dashboard.api.js';
-import { useSelector } from 'react-redux';
+import React from "react";
+import { useState } from "react";
+import { Link, NavLink, Outlet, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { channelProfile } from "../app/Slices/userSlice";
+import { ChannelProfileAtom } from "../components/index";
 
-const Channel = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const profileMenuRef = useRef(null);
-  const [channel, setChannel] = useState(null);
-  const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { user } = useSelector((state) => state.auth);
-  const [activeTab, setActiveTab] = useState('videos');
+function Channel({ owner = false }) {
+  const [profile, setProfile] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { username } = useParams();
+  const loggedInUsername = useSelector((state) => state.auth.userData?.username);
 
-  // Dummy handlers for now
-  const handleSearch = () => {};
-  const handleVoiceSearch = () => {};
-  const isListening = false;
-  const isAuthenticated = true; // Replace with your auth logic
- 
   useEffect(() => {
-    const fetchChannelData = async () => {
-      try {
-        const [stats, videosRes] = await Promise.all([
-          getChannelStats(),
-          getChannelVideos(),
-        ]);
-        setChannel(stats?.data || null);
-        setVideos(Array.isArray(videosRes?.data) ? videosRes.data : []);
-      } catch (error) {
-        console.error('Error fetching channel data:', error);
-        setError('Failed to load channel data');
-        setLoading(false);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!owner && loggedInUsername === username) navigate(`/channel/${loggedInUsername}`);
+    if (!username) return;
+    dispatch(channelProfile(username)).then((res) => {
+      setProfile(res.payload);
+    });
+  }, [username, loggedInUsername]);
 
-    if (isAuthenticated) {
-      fetchChannelData();
-    }
-  }, [isAuthenticated]);
+  const tabList = [
+    { name: "Videos", route: "" },
+    { name: "Playlists", route: "playlists" },
+    { name: "Tweets", route: "tweets" },
+    { name: "Subscribed", route: "subscribed" },
+    { name: "About", route: "about" },
+  ];
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!channel) {
-    return <div>No channel data found.</div>;
-  }
-
-  return (
-    <div className='w-full min-h-screen flex flex-col bg-gray-900'>
-      <HomeHeader
-        isSidebarOpen={isSidebarOpen}
-        setIsSidebarOpen={setIsSidebarOpen}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        handleSearch={handleSearch}
-        handleVoiceSearch={handleVoiceSearch}
-        isListening={isListening}
-        isAuthenticated={isAuthenticated}
-        user={user}
-        isProfileMenuOpen={isProfileMenuOpen}
-        setIsProfileMenuOpen={setIsProfileMenuOpen}
-        profileMenuRef={profileMenuRef}
-      />
-      <div className='flex flex-1'>
-        <Sidebar isSidebarOpen={isSidebarOpen} />
-        <div className={`flex-1 pt-16 ${isSidebarOpen ? 'ml-0 sm:ml-72' : 'ml-0'} transition-all duration-500`}>
-          {/* Channel Banner with overlapping avatar (mobile only) */}
-          <div
-            className="w-full h-40 sm:h-56 md:h-72 bg-cover bg-center relative"
-            style={{ backgroundImage: `url(${user.coverImage || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'})` }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent" />
-            {/* Avatar centered and overlapping on mobile only */}
-            <img
-              src={user.avatar || 'https://randomuser.me/api/portraits/men/32.jpg'}
-              alt="Channel Avatar"
-              className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-1/2 w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white shadow-lg bg-white object-cover block md:hidden"
-              style={{ zIndex: 2 }}
-            />
-          </div>
-          {/* Channel Info Card below avatar, responsive */}
-          <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-4 sm:px-8 mt-20 md:-mt-8 z-10">
-            {/* Avatar on the left for md+ devices */}
-            <img
-              src={user.avatar || 'https://randomuser.me/api/portraits/men/32.jpg'}
-              alt="Channel Avatar"
-              className="hidden md:block w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white object-cover md:mr-6 md:mb-0"
-              style={{ zIndex: 2 }}
-            />
-            <div className="flex-1 flex flex-col md:flex-row md:items-end md:justify-between w-full">
-              <div className="text-center md:text-left">
-                <h2 className="text-3xl font-bold text-white">{channel.ownername || 'Channel Name'}</h2>
-                <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mt-2">
-                  <span className="text-gray-300">{channel.totalSubscribers?.toLocaleString?.() || 0} subscribers</span>
-                  <span className="text-gray-300">{channel.totalVideos || 0} videos</span>
-                  <span className="text-gray-300">{channel.totalViews?.toLocaleString?.() || 0} views</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Channel Description and Tabs */}
-          <div className="px-4 sm:px-8 mt-8">
-            <div className="mb-6">
-              <p className="text-gray-200 text-center md:text-left text-lg">{channel.description || 'No description provided.'}</p>
-            </div>
-            {/* Tabs - sticky on scroll */}
-            <div className="flex gap-8 border-b border-gray-700 mb-6 sticky top-0 bg-gray-900 z-20 py-2">
-              <button
-                className={`pb-2 font-semibold transition-colors duration-200 ${activeTab === 'videos' ? 'border-b-2 border-red-600 text-white' : 'text-gray-400 hover:text-white'}`}
-                onClick={() => setActiveTab('videos')}
-              >
-                Videos
-              </button>
-              <button
-                className={`pb-2 font-semibold transition-colors duration-200 ${activeTab === 'about' ? 'border-b-2 border-red-600 text-white' : 'text-gray-400 hover:text-white'}`}
-                onClick={() => setActiveTab('about')}
-              >
-                About
-              </button>
-            </div>
-            {/* Tab Content */}
-            {activeTab === 'videos' ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {Array.isArray(videos) && videos.length === 0 ? (
-                  <div className="col-span-full text-gray-400 text-center">No videos found.</div>
-                ) : (
-                  Array.isArray(videos) && videos.map((video) => (
-                    <div
-                      key={video._id}
-                      className="bg-gray-800 rounded-xl p-4 flex flex-col items-center justify-center text-gray-200 shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-300 cursor-pointer"
-                    >
-                      <img
-                        src={video.thumbnail || 'https://via.placeholder.com/150'}
-                        alt={video.title}
-                        className="w-full h-32 sm:h-40 object-cover rounded mb-3"
-                      />
-                      <h3 className="text-lg font-semibold truncate w-full text-center">{video.title}</h3>
-                    </div>
-                  ))
-                )}
-              </div>
-            ) : (
-              <div className="bg-gray-800 rounded-xl p-6 sm:p-10 text-gray-200 shadow-2xl border border-gray-700 max-w-2xl mx-auto mt-8">
-                <h3 className="text-2xl font-bold mb-4 text-center">About {channel.ownername}</h3>
-                <p className="mb-4 text-gray-300 text-center">{channel.description || 'No description provided.'}</p>
-                <div className="flex flex-col gap-2 text-gray-400 text-center">
-                  <span><strong>Owner:</strong> {channel.ownername}</span>
-                  <span><strong>Subscribers:</strong> {channel.totalSubscribers?.toLocaleString?.() || 0}</span>
-                  <span><strong>Total Videos:</strong> {channel.totalVideos || 0}</span>
-                  <span><strong>Total Views:</strong> {channel.totalViews?.toLocaleString?.() || 0}</span>
-                </div>
-              </div>
-            )}
-          </div>
+  return profile ? (
+    <section className="w-full pb-[70px] sm:ml-[70px] sm:pb-0 lg:ml-0">
+      {/* Cover Image */}
+      <div className="relative min-h-[150px] w-full pt-[16.28%]">
+        <div className="absolute inset-0 overflow-hidden">
+          <img src={profile?.coverImage} alt={profile?.username} />
         </div>
       </div>
-    </div>
+
+      <div className="px-4 pb-4">
+        {/* Channel Metadata */}
+        <ChannelProfileAtom profile={profile} owner={owner} />
+        {/* Tab List */}
+        <ul className="no-scrollbar sticky top-[66px] z-[2] flex flex-row gap-x-2 overflow-auto border-b-2 border-gray-400 drop-shadow dark:bg-[#121212] bg-[#fff7f7ef] py-2 sm:top-[82px]">
+          {tabList?.map((item) => (
+            <li className="w-full">
+              <NavLink
+                to={item.route}
+                end
+                className={({ isActive }) =>
+                  `${
+                    isActive
+                      ? " dark:bg-white/90 bg-red-500 dark:border-[#ae7aff] border-red-800 border-2 dark:text-black text-white  rounded"
+                      : "dark:text-[#ae7aff] text-zinc-500 "
+                  } w-full text-center flex justify-center border-b-2  px-3 py-1.5`
+                }
+              >
+                <span className=" inline-block mx-auto ">{item.name}</span>
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+        <Outlet />
+      </div>
+    </section>
+  ) : (
+    <section className="w-full pb-[70px] sm:ml-[70px] sm:pb-0 lg:ml-0">
+      {/* Cover Image Skeleton */}
+      <div className="relative min-h-[150px] w-full pt-[16.28%] dark:bg-slate-100/10 bg-zinc-300 animate-pulse">
+        <div className="absolute inset-0 overflow-hidden"></div>
+      </div>
+
+      <div className="px-4 pb-4">
+        {/* Channel Metadata Skeleton */}
+        <div className="flex flex-wrap gap-4 pb-4 pt-6">
+          <div className="relative -mt-12 inline-block h-28 w-28 shrink-0 overflow-hidden rounded-full dark:bg-slate-100/10 bg-zinc-300 animate-pulse"></div>
+          <div className="mr-auto inline-block">
+            <div className="h-5 w-32 dark:bg-slate-100/10 bg-zinc-300 rounded animate-pulse"></div>
+            <div className="mt-2 h-3 w-24 dark:bg-slate-100/10 bg-zinc-300 rounded animate-pulse"></div>
+            <div className="mt-2 h-3 w-40 dark:bg-slate-100/10 bg-zinc-300 rounded animate-pulse"></div>
+          </div>
+          <div className="inline-block">
+            <div className="inline-flex min-w-[145px] justify-end">
+              <div className="h-10 w-32 dark:bg-slate-100/10 bg-zinc-300 rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* List Options Skeleton */}
+        <ul className="no-scrollbar sticky top-[66px] z-[2] flex flex-row gap-x-2 overflow-auto border-b-2 border-gray-400 bg-[#121212] py-2 sm:top-[82px]">
+          <li className="w-full">
+            <div className="h-10 w-full dark:bg-slate-100/10 bg-zinc-300 rounded animate-pulse"></div>
+          </li>
+          <li className="w-full">
+            <div className="h-10 w-full dark:bg-slate-100/10 bg-zinc-300 rounded animate-pulse"></div>
+          </li>
+          <li className="w-full">
+            <div className="h-10 w-full dark:bg-slate-100/10 bg-zinc-300 rounded animate-pulse"></div>
+          </li>
+          <li className="w-full">
+            <div className="h-10 w-full dark:bg-slate-100/10 bg-zinc-300 rounded animate-pulse"></div>
+          </li>
+          <li className="w-full">
+            <div className="h-10 w-full dark:bg-slate-100/10 bg-zinc-300 rounded animate-pulse"></div>
+          </li>
+        </ul>
+
+        {/* Outlet Skeleton */}
+        <div className="h-64 w-full dark:bg-slate-100/10 bg-zinc-300 rounded animate-pulse"></div>
+      </div>
+    </section>
   );
-};
+}
 
 export default Channel;
