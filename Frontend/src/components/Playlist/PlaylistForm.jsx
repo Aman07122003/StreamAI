@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { createPlaylist, updatePlaylist } from "../../app/Slices/playlistSlice";
-import { icons } from "../../assets/icons";
+import { icons } from "../../assets/icon";
 
 function PlaylistForm({ playlist }, ref) {
   const dialog = useRef();

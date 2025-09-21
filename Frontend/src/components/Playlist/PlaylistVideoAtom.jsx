@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { formatTimestamp, formatVideoDuration } from "../../helpers/formatFigures";
 import { addVideoToPlaylist, removeVideoFromPlaylist } from "../../app/Slices/playlistSlice";
 import { useDispatch } from "react-redux";
-import { icons } from "../../assets/icons";
+import { icons } from "../../assets/icon";
 
 function PlaylistVideoAtom({ video, playlistId, owner = false }) {
   const [isDeleted, setIsDeleted] = useState(false);

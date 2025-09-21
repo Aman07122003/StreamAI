@@ -4,7 +4,7 @@ import { Button, Input, Logo } from "../index";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { register as createAccount } from "../../app/Slices/userSlice";
-import { icons } from "../../assets/icons";
+import { icons } from "../../assets/icon";
 function SignUp() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -33,13 +33,13 @@ function SignUp() {
   return (
     <div className="h-screen w-full overflow-y-auto dark:bg-[#121212] dark:text-white bg-white text-black">
       <div className="mx-auto my-8 flex w-full max-w-sm flex-col px-4 border-2 border-red-300 dark:border-none  p-2 rounded-xl  ">
-        <div className="mx-auto inline-block w-16">
+        <div className="flex items-center justify-center">
           <Logo />
         </div>
-        <div className="mb-2 w-full text-center text-2xl font-semibold uppercase">
+        <div className="mt-3 w-full text-center text-xl font-semibold">
           Create an Account
         </div>
-        <h6 className="mx-auto text-md mb-1">
+        <h6 className="mx-auto text-sm mb-1">
           Already have an Account?{" "}
           <Link to={"/login"} className="font-semibold text-blue-600 hover:text-blue-400">
             Sign in now
@@ -47,7 +47,7 @@ function SignUp() {
         </h6>
         <form
           onSubmit={handleSubmit(handleSignUp)}
-          className="mx-auto mt-2 flex w-full max-w-sm flex-col px-4"
+          className="mx-auto mt-4 flex w-full max-w-sm flex-col px-4"
         >
           <Input
             label="Username"

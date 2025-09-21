@@ -1,7 +1,7 @@
 import React, { useRef, useImperativeHandle, useState } from "react";
 import { createPortal } from "react-dom";
 import ConfirmPopup from "../Atoms/ConfirmPopup";
-import { icons } from "../../assets/icons";
+import { icons } from "../../assets/icon";
 
 function UploadingVideo({ video, abort, updating = false }, ref) {
   const dialog = useRef();

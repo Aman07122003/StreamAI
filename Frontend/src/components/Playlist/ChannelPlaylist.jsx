@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { getUserPlaylists } from "../../app/Slices/playlistSlice";
 import { formatTimestamp } from "../../helpers/formatFigures";
 import { Link, useParams } from "react-router-dom";
-import { icons } from "../../assets/icons";
+import { icons } from "../../assets/icon";
 
 function ChannelPlaylist({ owner = false }) {
   const dispatch = useDispatch();

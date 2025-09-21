@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { getLikedVideos } from "../app/Slices/likeSlice";
 import { formatTimestamp, formatVideoDuration } from "../helpers/formatFigures";
 import { GuestComponent, VideoList } from "../components";
-import { icons } from "../assets/icons";
+import { icons } from "../assets/icon";
 
 function LikedVideos() {
   const [isLoading, setIsLoading] = useState(true);

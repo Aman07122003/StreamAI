@@ -8,13 +8,17 @@ const initialState = {
   loading: false,
   status: false,
   userData: {},
+  accessToken: localStorage.getItem('accessToken') || null,
+  refreshToken: localStorage.getItem('refreshToken') || null,
 };
 
 export const login = createAsyncThunk("auth/login", async (data) => {
   try {
     const response = await axiosInstance.post("/users/login", data);
     toast.success(response.data.message + " 🤩");
-    return response.data.data.user;
+    console.log(response);
+    return response.data.data;
+
   } catch (error) {
     // toast.error(parseErrorMessage(error.response.data));
     toast.error(error.response.data.message || parseErrorMessage(error.response.data));
@@ -39,7 +43,7 @@ export const getCurrentUser = createAsyncThunk("auth/getCurrentUser", async () =
     const response = await axiosInstance.get("/users/get-current-user");
     return response.data.data;
   } catch (error) {
-    console.error("BACKEND_ERROR :: GET CURRENT USER");
+    console.error("BACKEND_ERROR :: GET CURRENT USER", error);
     // toast.error("Not logged In...😕");
     throw error;
   }
@@ -196,7 +200,12 @@ const authSlice = createSlice({
     builder.addCase(login.fulfilled, (state, action) => {
       state.loading = false;
       state.status = true;
-      state.userData = action.payload;
+      state.userData = action.payload.user;
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+
+      if(state.accessToken) localStorage.setItem('accessToken', state.accessToken);
+      if(state.refreshToken) localStorage.setItem('refreshToken', state.refreshToken);
     });
     builder.addCase(login.rejected, (state) => {
       state.loading = false;
@@ -212,6 +221,11 @@ const authSlice = createSlice({
       state.loading = false;
       state.status = false;
       state.userData = null;
+      state.accessToken = null;
+      state.refreshToken = null;
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+
     });
     builder.addCase(logout.rejected, (state) => {
       state.loading = false;

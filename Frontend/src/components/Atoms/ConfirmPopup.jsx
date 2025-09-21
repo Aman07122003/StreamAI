@@ -1,6 +1,6 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { icons } from "../../assets/icons";
+import { icons } from "../../assets/icon";
 
 function ConfirmPopup(
   {

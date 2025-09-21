@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { deleteVideo, togglePublish } from "../../app/Slices/videoSlice";
 import { ConfirmPopup, UploadVideo } from "../index";
 import { getChannelVideos } from "../../app/Slices/dashboardSlice";
-import { icons } from "../../assets/icons";
+import { icons } from "../../assets/icon";
 
 function AdminVideoAtom({ video }) {
   const dispatch = useDispatch();

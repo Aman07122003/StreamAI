@@ -1,8 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { icons } from "../assets/icons.jsx";
-import DarkModeToggle from "./Atoms/Darkmode.jsx";
+import { icons } from "../assets/icon.jsx";
 
 function Aside() {
   const username = useSelector((state) => state.auth.userData?.username);
@@ -12,11 +11,6 @@ function Aside() {
       name: "Home",
       route: "",
       icon: <span className="h-full w-full">{icons.Home}</span>,
-    },
-    {
-      name: "Tweets",
-      route: "tweets",
-      icon: icons.Tweets,
     },
     {
       name: "Liked Videos",
@@ -78,7 +72,6 @@ function Aside() {
   return (
     <aside className="group fixed inset-x-0 bottom-0 z-40 w-full shrink-0 border-t border-red-500 dark:border-white dark:bg-[#121212] bg-white  px-2 py-2 sm:absolute sm:inset-y-0 sm:max-w-[70px] sm:border-r sm:border-t-0 sm:py-6 sm:hover:max-w-[250px] lg:sticky lg:max-w-[250px]">
       <ul className="flex justify-evenly gap-y-2 sm:sticky sm:top-[106px] sm:min-h-[calc(100vh-130px)] sm:flex-col">
-    <DarkModeToggle />
 
         {NavElements?.map((item) => (
           <li key={item.route} className={item.className + " /20"}>

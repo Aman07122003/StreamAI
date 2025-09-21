@@ -6,7 +6,7 @@ import { deletePlaylist, getPlaylistById } from "../../app/Slices/playlistSlice"
 import { formatTimestamp } from "../../helpers/formatFigures";
 import { PlaylistForm, EmptyPlaylist, ConfirmPopup } from "../index";
 import PlaylistVideoAtom from "./PlaylistVideoAtom";
-import { icons } from "../../assets/icons";
+import { icons } from "../../assets/icon";
 
 function PlaylistVideos() {
   const dispatch = useDispatch();

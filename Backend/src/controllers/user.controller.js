@@ -247,8 +247,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-// TODO Remove password from response.... .lean()
-
 const changePassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { formatTimestamp, formatVideoDuration } from "../../helpers/formatFigures";
 import { Link, useNavigate } from "react-router-dom";
-import { icons } from "../../assets/icons";
+import { icons } from "../../assets/icon";
 
 function VideoView({ videos = [], loading = true, fetching = false }) {
   const navigate = useNavigate();

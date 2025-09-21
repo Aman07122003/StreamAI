@@ -99,7 +99,7 @@ import { useForm } from "react-hook-form";
 import { login } from "../../app/Slices/authSlice.js";
 import { Logo, Input, Button } from "../index.js";
 import { Link, useNavigate } from "react-router-dom";
-import { icons } from "../../assets/icons.jsx";
+import { icons } from "../../assets/icon.jsx";
 import { toast } from "react-toastify";
 
 function Login() {
@@ -143,7 +143,7 @@ function Login() {
   return (
     <div className="h-screen w-full overflow-y-auto dark:bg-[#121212] dark:text-white bg-white text-black">
       <div className="border-2 border-red-300 dark:border-none rounded-xl p-5 mx-auto my-28 flex w-full max-w-sm flex-col px-4">
-        <div className="mx-auto inline-block w-16">
+        <div className="">
           <Logo />
         </div>
         <div className="mb-2 mt-2 w-full text-center text-2xl font-semibold uppercase">

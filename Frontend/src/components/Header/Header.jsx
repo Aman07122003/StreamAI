@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { Logo, LogoutBtn } from "../index";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { icons } from "../../assets/icons";
+import { icons } from "../../assets/icon";
 import some from '../../assets/some.png'
 import {DarkModeToggleforSmall} from "../Atoms/Darkmode";
 

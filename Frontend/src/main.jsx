@@ -13,7 +13,6 @@ import { store } from "./app/store.js";
 import {
   ChannelPlaylist,
   ChannelSubscribed,
-  ChannelTweets,
   ChannelVideos,
   Feed,
   Home,
@@ -29,7 +28,6 @@ import {
   GuestAdmin,
   GuestMyChannel,
   GuestSubscribers,
-  GuestTweets,
   PageNotFound,
 } from "./components/index.js";
 
@@ -39,15 +37,8 @@ import History from "./pages/History.jsx";
 import LikedVideos from "./pages/LikedVideos.jsx";
 import Settings from "./pages/Settings.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
-import FeedTweets from "./pages/FeedTweets.jsx";
 import Support from "./pages/Support.jsx";
 import SearchResult from "./pages/SearchResult.jsx";
-
-
-
-
-
-
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
@@ -57,17 +48,6 @@ const router = createBrowserRouter(
           <Route path="" element={<FeedVideos />} />
 
 
-
-          {/* Home Page Feed Tweets */}
-          <Route
-            path="tweets"
-            element={
-              <AuthLayout authentication guestComponent={<GuestTweets />}>
-                <FeedTweets />
-              </AuthLayout>
-            }
-          />
-
           {/* Playlists */}
           <Route path="playlist/:playlistId" element={<PlaylistVideos />} />
 
@@ -75,7 +55,6 @@ const router = createBrowserRouter(
           <Route path="user/:username" element={<Channel />}>
             <Route path="" element={<ChannelVideos owner={false} />} />
             <Route path="playlists" element={<ChannelPlaylist owner={false} />} />
-            <Route path="tweets" element={<ChannelTweets />} owner={false} />
             <Route path="subscribed" element={<ChannelSubscribed owner={false} />} />
             <Route path="about" element={<AboutChannel owner={false} />} />
           </Route>
@@ -90,7 +69,6 @@ const router = createBrowserRouter(
             }
           >
             <Route path="" element={<ChannelVideos owner />} />
-            <Route path="tweets" element={<ChannelTweets owner />} />
             <Route path="playlists" element={<ChannelPlaylist owner />} />
             <Route path="subscribed" element={<ChannelSubscribed owner />} />
             <Route path="about" element={<AboutChannel owner />} />
@@ -184,7 +162,6 @@ const router = createBrowserRouter(
 
   )
 );
-
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(

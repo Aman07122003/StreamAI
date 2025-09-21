@@ -1,141 +1,17 @@
+import React from 'react'
+import { ThumbsUp, History,EyeOff, House, Eye, Tv, UserStar, Podcast, UserCheck  } from 'lucide-react'
+
+
 export const icons = {
-  history: (
-    <svg
-      style={{ width: "100%" }}
-      viewBox="0 0 22 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M20.7 11.5L18.7005 9.5L16.7 11.5M19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C13.3019 1 16.1885 2.77814 17.7545 5.42909M10 5V10L13 12"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      ></path>
-    </svg>
-  ),
-  Home: (
-    <svg className="size-full" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M6 15.9997H14M9.0177 1.76375L2.23539 7.03888C1.78202 7.3915 1.55534 7.56781 1.39203 7.78861C1.24737 7.9842 1.1396 8.20454 1.07403 8.43881C1 8.70327 1 8.99045 1 9.56481V16.7997C1 17.9198 1 18.4799 1.21799 18.9077C1.40973 19.284 1.71569 19.59 2.09202 19.7818C2.51984 19.9997 3.07989 19.9997 4.2 19.9997H15.8C16.9201 19.9997 17.4802 19.9997 17.908 19.7818C18.2843 19.59 18.5903 19.284 18.782 18.9077C19 18.4799 19 17.9198 19 16.7997V9.56481C19 8.99045 19 8.70327 18.926 8.43881C18.8604 8.20454 18.7526 7.9842 18.608 7.78861C18.4447 7.56781 18.218 7.3915 17.7646 7.03888L10.9823 1.76376C10.631 1.4905 10.4553 1.35388 10.2613 1.30136C10.0902 1.25502 9.9098 1.25502 9.73865 1.30136C9.54468 1.35388 9.36902 1.4905 9.0177 1.76375Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      ></path>
-    </svg>
-  ),
-  eye: (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.5C7.30558 4.5 3.22618 7.3033 1.5 12C3.22618 16.6967 7.30558 19.5 12 19.5C16.6944 19.5 20.7738 16.6967 22.5 12C20.7738 7.3033 16.6944 4.5 12 4.5ZM12 15.75C10.2051 15.75 8.75 14.2949 8.75 12.5C8.75 10.7051 10.2051 9.25 12 9.25C13.7949 9.25 15.25 10.7051 15.25 12.5C15.25 14.2949 13.7949 15.75 12 15.75ZM12 7.75C9.89949 7.75 8.25 9.39949 8.25 11.5C8.25 13.6005 9.89949 15.25 12 15.25C14.1005 15.25 15.75 13.6005 15.75 11.5C15.75 9.39949 14.1005 7.75 12 7.75Z" />
-    </svg>
-  ),
-  eyeOff: (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.953 9.953A3.5 3.5 0 0114.048 14.048M3 3l18 18M9.054 9.054A7.968 7.968 0 0012 12a7.968 7.968 0 002.946-.946M12 3C7.30558 3 3.22618 5.8033 1.5 10.5C3.22618 15.1967 7.30558 18 12 18c2.30488 0 4.46608-.73551 6.28836-2.01639M12 12v.01m6.28836-2.01639C21.7738 10.1967 19.6944 6 12 6c-.52454 0-1.03691.0227-1.53742.0669M21 21L3 3" />
-    </svg>
-  ),
-  Tweets: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="size-full"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M16 7h.01" />
-      <path d="M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.3L2 20" />
-      <path d="m20 7 2 .5-2 .5" />
-      <path d="M10 18v3" />
-      <path d="M14 17.75V21" />
-      <path d="M7 18a6 6 0 0 0 3.84-10.61" />
-    </svg>
-  ),
-  Like: (
-    <svg className="size-full" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M6 21V10M1 12V19C1 20.1046 1.89543 21 3 21H16.4262C17.907 21 19.1662 19.9197 19.3914 18.4562L20.4683 11.4562C20.7479 9.6389 19.3418 8 17.5032 8H14C13.4477 8 13 7.55228 13 7V3.46584C13 2.10399 11.896 1 10.5342 1C10.2093 1 9.91498 1.1913 9.78306 1.48812L6.26394 9.40614C6.10344 9.76727 5.74532 10 5.35013 10H3C1.89543 10 1 10.8954 1 12Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      ></path>
-    </svg>
-  ),
-  MyContent: (
-    <svg className="size-full" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M21 4.93137C21 4.32555 21 4.02265 20.8802 3.88238C20.7763 3.76068 20.6203 3.69609 20.4608 3.70865C20.2769 3.72312 20.0627 3.93731 19.6343 4.36569L16 8L19.6343 11.6343C20.0627 12.0627 20.2769 12.2769 20.4608 12.2914C20.6203 12.3039 20.7763 12.2393 20.8802 12.1176C21 11.9774 21 11.6744 21 11.0686V4.93137Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      ></path>
-      <path
-        d="M1 5.8C1 4.11984 1 3.27976 1.32698 2.63803C1.6146 2.07354 2.07354 1.6146 2.63803 1.32698C3.27976 1 4.11984 1 5.8 1H11.2C12.8802 1 13.7202 1 14.362 1.32698C14.9265 1.6146 15.3854 2.07354 15.673 2.63803C16 3.27976 16 4.11984 16 5.8V10.2C16 11.8802 16 12.7202 15.673 13.362C15.3854 13.9265 14.9265 14.3854 14.362 14.673C13.7202 15 12.8802 15 11.2 15H5.8C4.11984 15 3.27976 15 2.63803 14.673C2.07354 14.3854 1.6146 13.9265 1.32698 13.362C1 12.7202 1 11.8802 1 10.2V5.8Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      ></path>
-    </svg>
-  ),
-  Admin: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="size-full"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 20a6 6 0 0 0-12 0" />
-      <circle cx="12" cy="10" r="4" />
-      <circle cx="12" cy="12" r="10" />
-    </svg>
-  ),
-  Subscription: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-      version="1.1"
-      x="0px"
-      y="0px"
-      fill="#FFF"
-      stroke="currentColor"
-      strokeWidth="2"
-      viewBox="0 0 90 100"
-      xmlSpace="preserve"
-    >
-      <g>
-        <path d="M82.2,34.9c-0.3-4-2.4-7.4-5.5-9.5c-0.5-6.5-5.9-11.6-12.5-11.6H35.8c-6.6,0-12,5.1-12.5,11.6c-3.1,2.1-5.2,5.5-5.5,9.5   c-3.3,2.2-5.5,6.1-5.5,10.4v28.5c0,6.9,5.6,12.5,12.5,12.5h50.5c6.9,0,12.5-5.6,12.5-12.5V45.2C87.7,40.9,85.5,37.1,82.2,34.9z    M82.7,73.8c0,4.1-3.4,7.5-7.5,7.5H24.8c-4.1,0-7.5-3.4-7.5-7.5V45.2c0-4.1,3.4-7.5,7.5-7.5h50.5c4.1,0,7.5,3.4,7.5,7.5V73.8z    M35.8,18.7h28.5c3.1,0,5.8,1.9,6.9,4.6c-0.5-0.1-0.9-0.1-1.4-0.1H30.3c-0.5,0-0.9,0-1.4,0.1C30,20.6,32.7,18.7,35.8,18.7z    M30.3,28.2h39.5c3.1,0,5.8,1.9,6.9,4.6c-0.5-0.1-0.9-0.1-1.4-0.1H24.8c-0.5,0-0.9,0-1.4,0.1C24.5,30.1,27.2,28.2,30.3,28.2z" />
-        <path d="M62.7,61.2c1.3-0.8,1.3-2.7,0-3.5L42.3,46c-1.3-0.8-3,0.2-3,1.7v23.6c0,1.5,1.7,2.5,3,1.7L62.7,61.2z" />
-      </g>
-    </svg>
-  ),
-  Subscribers: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="size-full"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  ),
+  history: <History />,
+  Home: <House />,
+  eye: <Eye />,
+  eyeOff: <EyeOff />,
+  Like: <ThumbsUp />,
+  MyContent:<Tv />,
+  Admin:<UserStar />,
+  Subscription: <Podcast />,
+  Subscribers: <UserCheck />,
   support: (
     <svg className="size-full" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
@@ -446,3 +322,6 @@ export const icons = {
     </svg>
   ),
 };
+
+
+export default icons

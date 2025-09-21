@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { clearWatchHistory, watchHistory } from "../app/Slices/authSlice";
 import { GuestComponent, VideoList } from "../components";
-import { icons } from "../assets/icons";
+import { icons } from "../assets/icon";
 
 function History() {
   const dispatch = useDispatch();

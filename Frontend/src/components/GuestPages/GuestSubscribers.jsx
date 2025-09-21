@@ -1,6 +1,6 @@
 import React from "react";
 import GuestComponent from "./GuestComponent";
-import { icons } from "../../assets/icons";
+import { icons } from "../../assets/icon";
 
 function GuestSubscribers() {
   return (
