@@ -38,7 +38,7 @@ export const logout = createAsyncThunk("auth/logout", async () => {
   }
 });
 
-export const getCurrentUser = createAsyncThunk("auth/getCurrentUser", async () => {
+/*export const getCurrentUser = createAsyncThunk("auth/getCurrentUser", async () => {
   try {
     const response = await axiosInstance.get("/users/get-current-user");
     return response.data.data;
@@ -47,7 +47,7 @@ export const getCurrentUser = createAsyncThunk("auth/getCurrentUser", async () =
     // toast.error("Not logged In...😕");
     throw error;
   }
-});
+});*/
 
 // OPTIMIZEME Make me secure by urlrncoding
 export const changePassword = createAsyncThunk("auth/changePassword", async (data) => {
@@ -232,7 +232,7 @@ const authSlice = createSlice({
       state.status = false;
     });
 
-    //getCurrentUser
+    /*getCurrentUser
     builder.addCase(getCurrentUser.pending, (state) => {
       state.loading = true;
     });
@@ -246,6 +246,7 @@ const authSlice = createSlice({
       state.userData = null;
       state.status = false;
     });
+    */
 
     //change Password
     builder.addCase(changePassword.pending, (state) => {

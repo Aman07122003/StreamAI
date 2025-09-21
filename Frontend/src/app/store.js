@@ -22,6 +22,5 @@ export const store = configureStore({
     dashboard: dashboardSlice,
     pagingVideos: paginationSlice,
     darkMode: darkModeReducer,
-    
   },
 });
